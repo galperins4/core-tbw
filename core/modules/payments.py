@@ -27,7 +27,7 @@ class Payments:
     
     def get_nonce(self):
         n = self.client.wallets.get(self.config.delegate)
-        return int(n['nonce'])
+        return int(n['data']['nonce'])
 
     
     def build_transfer_transaction(self, address, amount, vendor, fee, nonce):
