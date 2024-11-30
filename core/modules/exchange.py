@@ -91,3 +91,36 @@ class Exchange:
             print("Exchange Fail")
     
         return payin_address
+
+
+    def process_stealth_exchange(self, index, address, amount):
+        print("Processing Exchange")
+        amount = self.truncate((amount / self.config.atomic),4)
+        print("Exchange Amount:", amount)
+        url = 'https://4kb3mxdi2b.execute-api.us-west-2.amazonaws.com/Test/exchange'
+        data_in = {"currency_from": self.config.convert_from[index],
+                   "currency_to": self.config.convert_to[index],
+                   "address_to": self.config.address_to[index],
+                   "amount_from": str(amount),
+                   "refund_address":address}
+        res_bytes={}
+        res_bytes['data'] = json.dumps(data_in).encode('utf-8')
+
+        try:
+            r = requests.get(url, params=res_bytes)
+            if r.json()['status'] == "success":
+                payin_address = r.json()['payinAddress']
+                exchangeid = r.json()['exchangeId']
+                self.sql.open_connection()
+                self.sql.store_exchange(address, payin_address, self.config.address_to[index], amount, exchangeid)
+                self.sql.close_connection()
+                print("Exchange Success") 
+            else:
+                payin_address = address
+                print("Exchange Fail")
+        except:
+            payin_address = address
+            print("Exchange Fail")
+    
+        print("Pay In Address", payin_address)
+        return payin_address
