@@ -20,6 +20,8 @@ class Exchange:
             pay = self.process_changenow_exchange(index, address, amount)
         elif provider == "SimpleSwap":
             pay = self.process_simpleswap_exchange(index, address, amount)
+        elif provider == "StealthEx":
+            pay = self.process_stealth_exchange(index, address, amount)
         else:
             pay = address
         time.sleep(5)
